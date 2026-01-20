@@ -27,34 +27,34 @@ const Hero: React.FC<{ lang: Language }> = ({ lang }) => {
         <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/70 to-transparent rtl:bg-gradient-to-l"></div>
       </div>
 
-      <div className="container mx-auto px-6 relative z-10 pt-10">
-        <div className="max-w-4xl animate-fade-in-up">
-          <div className="flex items-center space-x-4 rtl:space-x-reverse mb-8">
-            <div className="w-12 h-[1px] bg-amber-500"></div>
+      <div className="container mx-auto px-6 md:px-12 lg:px-16 relative z-10 pt-10">
+        <div className="max-w-5xl animate-fade-in-up">
+          <div className="flex items-center space-x-4 rtl:space-x-reverse mb-6 md:mb-10">
+            <div className="w-10 md:w-16 h-[1px] bg-amber-500"></div>
             <span className="text-amber-500 font-architectural font-bold uppercase tracking-[0.5em] text-[10px] md:text-xs">
               {t.legacy}
             </span>
           </div>
           
-          <h1 className="text-4xl sm:text-6xl md:text-8xl font-architectural font-bold text-white mb-10 leading-[1] tracking-tighter uppercase">
+          <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-architectural font-bold text-white mb-8 md:mb-12 leading-[1.1] md:leading-[1] tracking-tighter uppercase">
             {t.title}
           </h1>
           
-          <p className="text-zinc-400 text-base md:text-xl max-w-2xl mb-14 leading-relaxed font-light border-l-2 rtl:border-l-0 rtl:border-r-2 border-amber-600/30 pl-8 rtl:pl-0 rtl:pr-8 text-left rtl:text-right">
+          <p className="text-zinc-400 text-sm md:text-lg lg:text-xl max-w-2xl mb-12 md:mb-16 lg:mb-20 leading-relaxed font-light border-l-2 rtl:border-l-0 rtl:border-r-2 border-amber-600/30 pl-6 md:pl-10 rtl:pl-0 rtl:pr-6 md:rtl:pr-10 text-left rtl:text-right">
             {t.subtitle}
           </p>
           
-          <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-8 rtl:space-x-reverse">
+          <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-6 md:space-x-10 rtl:space-x-reverse">
             <button 
               onClick={scrollToProjects}
-              className="group relative overflow-hidden bg-amber-600 text-white px-12 py-6 font-architectural font-bold uppercase tracking-[0.3em] text-[10px] transition-all text-center"
+              className="group relative overflow-hidden bg-amber-600 text-white px-10 md:px-16 py-5 md:py-7 lg:py-8 font-architectural font-bold uppercase tracking-[0.3em] text-[10px] transition-all text-center shadow-2xl"
             >
               <span className="relative z-10">{t.explore}</span>
               <div className="absolute inset-0 bg-amber-700 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
             </button>
             <button 
               onClick={() => setShowLegacy(true)}
-              className="group relative border border-white/20 hover:border-white/50 text-white px-12 py-6 font-architectural font-bold uppercase tracking-[0.3em] text-[10px] transition-all text-center"
+              className="group relative border border-white/20 hover:border-white/50 text-white px-10 md:px-16 py-5 md:py-7 lg:py-8 font-architectural font-bold uppercase tracking-[0.3em] text-[10px] transition-all text-center"
             >
               <span className="relative z-10">{t.dossier}</span>
             </button>
@@ -62,9 +62,9 @@ const Hero: React.FC<{ lang: Language }> = ({ lang }) => {
         </div>
       </div>
 
-      <div className="absolute bottom-12 left-6 md:left-12 rtl:left-auto rtl:right-6 md:rtl:right-12 flex items-center space-x-6 rtl:space-x-reverse text-white/20 text-[8px] uppercase tracking-[0.4em] font-architectural font-bold">
+      <div className="absolute bottom-10 md:bottom-16 left-6 md:left-12 rtl:left-auto rtl:right-6 md:rtl:right-12 flex items-center space-x-6 rtl:space-x-reverse text-white/20 text-[8px] md:text-[9px] uppercase tracking-[0.4em] font-architectural font-bold">
         <span>{t.precision}: 0.001mm</span>
-        <div className="w-8 h-[1px] bg-white/10"></div>
+        <div className="w-8 md:w-12 h-[1px] bg-white/10"></div>
         <span>{t.level}: 400</span>
       </div>
 
