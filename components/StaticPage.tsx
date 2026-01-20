@@ -1,118 +1,44 @@
 
 import React, { useState } from 'react';
+import { Language, UI_STRINGS } from '../translations';
 
 interface StaticPageProps {
+  lang: Language;
   type: 'services-overview' | 'careers' | 'press' | 'privacy' | 'terms' | 'cookies' | 'enquire' | 'brand';
   onBack: () => void;
 }
 
-const StaticPage: React.FC<StaticPageProps> = ({ type, onBack }) => {
+const StaticPage: React.FC<StaticPageProps> = ({ lang, type, onBack }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const t = UI_STRINGS[lang].staticContent;
+  const common = UI_STRINGS[lang].common;
+
+  const getPageContent = () => {
+    switch (type) {
+      case 'brand': return t.brand;
+      case 'services-overview': return t.servicesOverview;
+      case 'careers': return t.careers;
+      case 'press': return t.press;
+      case 'enquire': return { ...t.enquire, isForm: true };
+      case 'privacy': return t.privacy;
+      case 'terms': return t.terms;
+      case 'cookies': return t.cookies;
+      default: return { title: 'Info', subtitle: 'Structura', content: '...' };
+    }
+  };
+
+  const page = getPageContent() as any;
 
   const handleEnquirySubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Explicit simulation of transmission to user email
     console.log("TRANSMITTING ENQUIRY TO: hello@amrostudio.co");
     setTimeout(() => {
       setIsSubmitting(false);
       setIsSubmitted(true);
     }, 1500);
   };
-
-  const getPageContent = () => {
-    switch (type) {
-      case 'brand':
-        return {
-          title: 'Brand Identity',
-          subtitle: 'Assets & Origin',
-          content: 'STRUCTURA is a modern construction technology platform. It is built to support construction and architecture professionals by providing a structured, centralized system.',
-          sections: [
-            { h: 'The Logo (SVG)', p: 'The primary mark represents structural symmetry and core stability. It is a rotated square within a square.' },
-            { h: 'Favicon Icon', p: 'A pure white and black version of the core diamond icon for high-visibility digital utility.' },
-            { h: 'The Manifesto', p: 'Focusing on clarity, performance, and scalability to reduce complexity in real-world construction.' }
-          ]
-        };
-      case 'services-overview':
-        return {
-          title: 'Integrated Services',
-          subtitle: 'Our Holistic Approach',
-          content: 'We provide end-to-end solutions from conceptual stress testing to post-occupancy facility management. Our methodology leverages BIM Level 400 precision and carbon-neutral material science.',
-          sections: [
-            { h: 'Conceptual Design', p: 'Architectural modeling with structural feasibility audits.' },
-            { h: 'Advanced Engineering', p: 'Tensioned cable systems and hybrid load-bearing solutions.' },
-            { h: 'Material Logistics', p: 'Ethical sourcing of high-performance composites.' }
-          ]
-        };
-      case 'careers':
-        return {
-          title: 'Join the Vanguard',
-          subtitle: 'Future Horizons',
-          content: 'We are always looking for visionary engineers and innovative architects who challenge the limits of structural geometry.',
-          sections: [
-            { h: 'Senior Structural Engineer', p: 'Lead complex steel-hybrid projects in Chicago.' },
-            { h: 'BIM Coordinator', p: 'Manage high-LOD digital twins for international landmarks.' },
-            { h: 'Material Scientist', p: 'R&D focused on sustainable concrete alternatives.' }
-          ]
-        };
-      case 'press':
-        return {
-          title: 'Press & Media',
-          subtitle: 'Newsroom',
-          content: 'Discover the latest breakthroughs in high-tolerance engineering and metropolitan landmark deliveries.',
-          sections: [
-            { h: 'Media Kit', p: 'Download high-resolution structural renderings and corporate logos.' },
-            { h: 'Public Relations', p: 'For inquiries, reach out to hello@amrostudio.co.' },
-            { h: 'Recent Features', p: 'Recognized by Architectural Digest for the Obsidian Tower innovation.' }
-          ]
-        };
-      case 'enquire':
-        return {
-          title: 'Start a Project',
-          subtitle: 'Project Enquiry',
-          content: 'Ready to build the future? Fill out the form below or contact our global headquarters directly at hello@amrostudio.co.',
-          isForm: true
-        };
-      case 'privacy':
-        return {
-          title: 'Privacy Protocol',
-          subtitle: 'Data Integrity',
-          content: 'At STRUCTURA, we treat architectural data with the same integrity as our buildings. Your blueprints and metadata are encrypted.',
-          sections: [
-            { h: 'Data Security', p: 'All transmissions to hello@amrostudio.co are secured using AES-256 encryption.' },
-            { h: 'BIM Protection', p: 'Metadata is used only for calculation accuracy within the Mission Control hub.' },
-            { h: 'Your Rights', p: 'You have full ownership of your architectural models stored on our nodes.' }
-          ]
-        };
-      case 'terms':
-        return {
-          title: 'Terms of Service',
-          subtitle: 'Legal Framework',
-          content: 'Accessing the STRUCTURA platform implies agreement with our architectural and engineering operational standards.',
-          sections: [
-            { h: 'BIM Usage', p: 'Users are responsible for verifying structural parameters generated by the Analysis tab.' },
-            { h: 'Liability', p: 'Final structural sign-off must be conducted by a certified engineer in your jurisdiction.' },
-            { h: 'Platform Access', p: 'Mission Control is provided for professional use only.' }
-          ]
-        };
-      case 'cookies':
-        return {
-          title: 'Cookie Settings',
-          subtitle: 'System Persistence',
-          content: 'We use essential technical cookies to maintain your Mission Control session and structural metadata preferences.',
-          sections: [
-            { h: 'Session Cookies', p: 'Required for maintaining state across Analysis and Workflow tabs.' },
-            { h: 'Analytical Nodes', p: 'Used to improve the responsiveness of our BIM Level 400 simulations.' },
-            { h: 'Preference Sync', p: 'Ensures your Node ID remains consistent throughout your workspace session.' }
-          ]
-        };
-      default:
-        return { title: 'Information', subtitle: 'Structura', content: 'Details coming soon.' };
-    }
-  };
-
-  const page = getPageContent();
 
   return (
     <div className="pt-32 pb-24 min-h-screen bg-zinc-50 animate-fade-in-up">
@@ -122,7 +48,7 @@ const StaticPage: React.FC<StaticPageProps> = ({ type, onBack }) => {
           className="flex items-center space-x-3 text-zinc-400 hover:text-amber-600 transition-colors uppercase tracking-[0.25em] text-[10px] font-bold font-architectural mb-16 group"
         >
           <svg className="w-4 h-4 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-          <span>Return</span>
+          <span>{common.return}</span>
         </button>
 
         <span className="text-amber-600 font-bold uppercase tracking-[0.4em] text-[10px] mb-5 block font-architectural">{page.subtitle}</span>
@@ -130,7 +56,7 @@ const StaticPage: React.FC<StaticPageProps> = ({ type, onBack }) => {
           {page.title}
         </h1>
         
-        <p className="text-xl md:text-2xl font-light text-zinc-600 leading-relaxed mb-20 border-l-4 border-amber-500 pl-10">
+        <p className="text-xl md:text-2xl font-light text-zinc-600 leading-relaxed mb-20 border-l-4 border-amber-500 pl-10 rtl:pl-0 rtl:pr-10">
           {page.content}
         </p>
 
@@ -148,7 +74,7 @@ const StaticPage: React.FC<StaticPageProps> = ({ type, onBack }) => {
             <div className="space-y-6">
               <h3 className="text-zinc-900 font-architectural font-bold uppercase tracking-[0.2em] text-[10px]">Full Brand Mark</h3>
               <div className="bg-white border border-zinc-200 p-12 flex flex-col items-center justify-center rounded-sm space-y-8">
-                 <div className="flex items-center space-x-4">
+                 <div className="flex items-center space-x-4 rtl:space-x-reverse">
                     <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <rect x="20" y="20" width="60" height="60" fill="black" transform="rotate(45 50 50)"/>
                       <rect x="35" y="35" width="30" height="30" fill="white" transform="rotate(45 50 50)"/>
@@ -163,7 +89,7 @@ const StaticPage: React.FC<StaticPageProps> = ({ type, onBack }) => {
 
         {page.sections && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 pt-16 border-t border-zinc-200">
-            {page.sections.map((s, i) => (
+            {page.sections.map((s: any, i: number) => (
               <div key={i} className="space-y-4">
                 <h3 className="text-zinc-900 font-architectural font-bold uppercase tracking-[0.2em] text-[10px]">{s.h}</h3>
                 <p className="text-zinc-500 font-light text-sm leading-relaxed">{s.p}</p>
@@ -179,30 +105,30 @@ const StaticPage: React.FC<StaticPageProps> = ({ type, onBack }) => {
                 <div className="w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-10">
                   <svg className="w-12 h-12 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/></svg>
                 </div>
-                <h3 className="text-2xl font-architectural font-bold text-zinc-900 uppercase tracking-tighter mb-5">Blueprint Received</h3>
-                <p className="text-zinc-500 font-light max-w-sm mx-auto leading-relaxed">Your enquiry has been securely transmitted to <span className="font-bold text-zinc-900">hello@amrostudio.co</span>. Our senior consultants will reach out within 48 hours.</p>
+                <h3 className="text-2xl font-architectural font-bold text-zinc-900 uppercase tracking-tighter mb-5">{page.brief}</h3>
+                <p className="text-zinc-500 font-light max-w-sm mx-auto leading-relaxed">{page.successMsg}</p>
                 <button 
                   onClick={() => setIsSubmitted(false)}
                   className="mt-12 text-amber-600 font-architectural font-bold uppercase tracking-[0.3em] text-[10px] hover:text-amber-700 transition-colors"
                 >
-                  Send Another Transmission
+                  {page.another}
                 </button>
               </div>
             ) : (
               <form onSubmit={handleEnquirySubmit} className="space-y-10">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                   <div className="space-y-3">
-                    <label className="text-[9px] font-architectural font-bold uppercase tracking-[0.2em] text-zinc-400">Full Name</label>
-                    <input required type="text" className="w-full border-b border-zinc-200 py-4 focus:outline-none focus:border-amber-600 transition-colors bg-transparent placeholder-zinc-300" placeholder="IDENTITY" />
+                    <label className="text-[9px] font-architectural font-bold uppercase tracking-[0.2em] text-zinc-400">{UI_STRINGS[lang].contact.identity}</label>
+                    <input required type="text" className="w-full border-b border-zinc-200 py-4 focus:outline-none focus:border-amber-600 transition-colors bg-transparent placeholder-zinc-300" placeholder={UI_STRINGS[lang].contact.form.name} />
                   </div>
                   <div className="space-y-3">
-                    <label className="text-[9px] font-architectural font-bold uppercase tracking-[0.2em] text-zinc-400">Email Address</label>
-                    <input required type="email" className="w-full border-b border-zinc-200 py-4 focus:outline-none focus:border-amber-600 transition-colors bg-transparent placeholder-zinc-300" placeholder="COMMUNICATION" />
+                    <label className="text-[9px] font-architectural font-bold uppercase tracking-[0.2em] text-zinc-400">{UI_STRINGS[lang].contact.communication}</label>
+                    <input required type="email" className="w-full border-b border-zinc-200 py-4 focus:outline-none focus:border-amber-600 transition-colors bg-transparent placeholder-zinc-300" placeholder={UI_STRINGS[lang].contact.form.email} />
                   </div>
                 </div>
                 <div className="space-y-3">
-                  <label className="text-[9px] font-architectural font-bold uppercase tracking-[0.2em] text-zinc-400">Project Brief</label>
-                  <textarea required rows={5} className="w-full border-b border-zinc-200 py-4 focus:outline-none focus:border-amber-600 transition-colors bg-transparent resize-none placeholder-zinc-300" placeholder="OUTLINE YOUR ARCHITECTURAL VISION..."></textarea>
+                  <label className="text-[9px] font-architectural font-bold uppercase tracking-[0.2em] text-zinc-400">{UI_STRINGS[lang].contact.description}</label>
+                  <textarea required rows={5} className="w-full border-b border-zinc-200 py-4 focus:outline-none focus:border-amber-600 transition-colors bg-transparent resize-none placeholder-zinc-300" placeholder={UI_STRINGS[lang].contact.form.vision}></textarea>
                 </div>
                 <button 
                   type="submit" 
@@ -210,11 +136,11 @@ const StaticPage: React.FC<StaticPageProps> = ({ type, onBack }) => {
                   className="w-full bg-zinc-950 text-white py-6 font-architectural font-bold uppercase tracking-[0.35em] text-[11px] hover:bg-amber-600 transition-all disabled:bg-zinc-800 flex items-center justify-center group shadow-xl"
                 >
                   {isSubmitting ? (
-                    <span className="animate-pulse">Submitting...</span>
+                    <span className="animate-pulse">{common.sending}</span>
                   ) : (
                     <>
-                      <span>Submit</span>
-                      <svg className="w-4 h-4 ml-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                      <span>{common.submit}</span>
+                      <svg className="w-4 h-4 ml-5 rtl:mr-5 rtl:ml-0 transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                     </>
                   )}
                 </button>

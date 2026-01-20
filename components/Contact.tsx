@@ -1,17 +1,21 @@
 
 import React, { useState } from 'react';
+import { Language, UI_STRINGS } from '../translations';
 
 interface ContactProps {
+  lang: Language;
   onNavigate: (view: any) => void;
 }
 
-const Contact: React.FC<ContactProps> = ({ onNavigate }) => {
+const Contact: React.FC<ContactProps> = ({ lang, onNavigate }) => {
+  const t = UI_STRINGS[lang].contact;
+  const common = UI_STRINGS[lang].common;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    sector: 'Residential Architecture',
+    sector: t.form.sectors[0],
     description: ''
   });
 
@@ -19,7 +23,6 @@ const Contact: React.FC<ContactProps> = ({ onNavigate }) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Explicitly targeting hello@amrostudio.co
     console.log("TRANSMITTING TO: hello@amrostudio.co", {
       timestamp: new Date().toISOString(),
       recipient: "hello@amrostudio.co",
@@ -38,31 +41,31 @@ const Contact: React.FC<ContactProps> = ({ onNavigate }) => {
         <div className="bg-white shadow-2xl overflow-hidden flex flex-col lg:flex-row border border-zinc-100">
           <div className="lg:w-1/2 p-12 lg:p-24 bg-zinc-950 text-white relative overflow-hidden">
             <div className="absolute inset-0 bg-grid-wallpaper opacity-5 pointer-events-none"></div>
-            <div className="absolute top-0 right-0 p-8">
-              <div className="w-16 h-16 border-t border-r border-amber-600/30"></div>
+            <div className="absolute top-0 right-0 p-8 rtl:right-auto rtl:left-0">
+              <div className="w-16 h-16 border-t border-r rtl:border-r-0 rtl:border-l border-amber-600/30"></div>
             </div>
             
-            <span className="text-amber-500 font-architectural font-bold uppercase tracking-[0.4em] text-[10px] mb-8 block relative z-10">Direct Commissioning</span>
+            <span className="text-amber-500 font-architectural font-bold uppercase tracking-[0.4em] text-[10px] mb-8 block relative z-10">{t.subtitle}</span>
             <h2 className="text-4xl md:text-6xl font-architectural font-bold mb-12 tracking-tighter uppercase relative z-10">
-              START YOUR <br /><span className="text-zinc-600">NEXT LEGACY</span>
+              {t.title.split(' ').slice(0, 2).join(' ')} <br /><span className="text-zinc-600">{t.title.split(' ').slice(2).join(' ')}</span>
             </h2>
             
             <div className="space-y-12 relative z-10">
               <div>
-                <h4 className="text-zinc-600 font-architectural uppercase tracking-[0.3em] text-[9px] font-bold mb-5">Communication Nodes</h4>
+                <h4 className="text-zinc-600 font-architectural uppercase tracking-[0.3em] text-[9px] font-bold mb-5">{t.nodes}</h4>
                 <p className="text-xl font-light text-zinc-300">hello@amrostudio.co</p>
                 <p className="text-sm text-zinc-500 mt-2 font-mono">SECURE RELAY ACTIVE</p>
               </div>
               
               <div>
-                <h4 className="text-zinc-600 font-architectural uppercase tracking-[0.3em] text-[9px] font-bold mb-5">Global HQ</h4>
+                <h4 className="text-zinc-600 font-architectural uppercase tracking-[0.3em] text-[9px] font-bold mb-5">{t.hq}</h4>
                 <p className="text-lg font-light text-zinc-400">
                   88 Structural Plaza, Suite 400<br />
                   Chicago, IL 60601, USA
                 </p>
               </div>
 
-              <div className="flex space-x-10 pt-6">
+              <div className="flex space-x-10 rtl:space-x-reverse pt-6">
                 {['LinkedIn', 'Instagram', 'Behance'].map(social => (
                   <button 
                     key={social} 
@@ -82,67 +85,64 @@ const Contact: React.FC<ContactProps> = ({ onNavigate }) => {
                 <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-8">
                   <svg className="w-10 h-10 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/></svg>
                 </div>
-                <h3 className="text-2xl font-architectural font-bold text-zinc-900 uppercase tracking-tighter mb-4">Transmission Success</h3>
+                <h3 className="text-2xl font-architectural font-bold text-zinc-900 uppercase tracking-tighter mb-4">{t.success}</h3>
                 <p className="text-zinc-500 font-light max-w-sm mx-auto leading-relaxed">
-                  The project brief has been encrypted and sent to our senior planning division at <span className="text-zinc-900 font-bold">hello@amrostudio.co</span>.
+                  {t.successDesc} <span className="text-zinc-900 font-bold">hello@amrostudio.co</span>.
                 </p>
                 <button 
                   onClick={() => setIsSubmitted(false)}
                   className="mt-10 text-amber-600 font-architectural font-bold uppercase tracking-[0.3em] text-[10px] hover:text-amber-700 transition-colors"
                 >
-                  Return to Form
+                  {common.return}
                 </button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-10">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                   <div className="space-y-3">
-                    <label className="text-[9px] font-architectural font-bold uppercase tracking-[0.2em] text-zinc-400">Identity</label>
+                    <label className="text-[9px] font-architectural font-bold uppercase tracking-[0.2em] text-zinc-400">{t.identity}</label>
                     <input 
                       required 
                       type="text" 
                       value={formData.name}
                       onChange={(e) => setFormData({...formData, name: e.target.value})}
                       className="w-full border-b border-zinc-200 py-3 focus:outline-none focus:border-amber-600 transition-colors bg-transparent placeholder-zinc-300 font-light" 
-                      placeholder="FULL NAME" 
+                      placeholder={t.form.name} 
                     />
                   </div>
                   <div className="space-y-3">
-                    <label className="text-[9px] font-architectural font-bold uppercase tracking-[0.2em] text-zinc-400">Communication</label>
+                    <label className="text-[9px] font-architectural font-bold uppercase tracking-[0.2em] text-zinc-400">{t.communication}</label>
                     <input 
                       required 
                       type="email" 
                       value={formData.email}
                       onChange={(e) => setFormData({...formData, email: e.target.value})}
                       className="w-full border-b border-zinc-200 py-3 focus:outline-none focus:border-amber-600 transition-colors bg-transparent placeholder-zinc-300 font-light" 
-                      placeholder="EMAIL ADDRESS" 
+                      placeholder={t.form.email} 
                     />
                   </div>
                 </div>
                 
                 <div className="space-y-3">
-                  <label className="text-[9px] font-architectural font-bold uppercase tracking-[0.2em] text-zinc-400">Sector Selection</label>
+                  <label className="text-[9px] font-architectural font-bold uppercase tracking-[0.2em] text-zinc-400">{t.sector}</label>
                   <select 
                     value={formData.sector}
                     onChange={(e) => setFormData({...formData, sector: e.target.value})}
                     className="w-full border-b border-zinc-200 py-3 focus:outline-none focus:border-amber-600 transition-colors bg-transparent appearance-none text-zinc-500 cursor-pointer font-light"
                   >
-                    <option>Residential Architecture</option>
-                    <option>Commercial Infrastructure</option>
-                    <option>Industrial Solutions</option>
-                    <option>Structural Renovation</option>
+                    {t.form.sectors.map((s: string) => <option key={s}>{s}</option>)}
                   </select>
                 </div>
 
                 <div className="space-y-3">
-                  <label className="text-[9px] font-architectural font-bold uppercase tracking-[0.2em] text-zinc-400">Brief Description</label>
+                  <label className="text-[9px] font-architectural font-bold uppercase tracking-[0.2em] text-zinc-400">{t.description}</label>
                   <textarea 
                     rows={4} 
                     required
                     value={formData.description}
                     onChange={(e) => setFormData({...formData, description: e.target.value})}
                     className="w-full border-b border-zinc-200 py-3 focus:outline-none focus:border-amber-600 transition-colors bg-transparent resize-none placeholder-zinc-300 font-light" 
-                    placeholder="OUTLINE YOUR VISION..."
+                    placeholder={t.form.vision}
                   ></textarea>
                 </div>
 
@@ -154,12 +154,12 @@ const Contact: React.FC<ContactProps> = ({ onNavigate }) => {
                   {isSubmitting ? (
                     <div className="flex items-center space-x-3">
                       <div className="w-2 h-2 bg-amber-500 rounded-full animate-ping"></div>
-                      <span className="animate-pulse">Submitting...</span>
+                      <span className="animate-pulse">{common.sending}</span>
                     </div>
                   ) : (
                     <>
-                      <span>Submit</span>
-                      <svg className="w-4 h-4 ml-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                      <span>{t.submit}</span>
+                      <svg className="w-4 h-4 ml-4 rtl:mr-4 rtl:ml-0 transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                     </>
                   )}
                 </button>

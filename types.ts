@@ -1,10 +1,12 @@
 
 import React from 'react';
+import { Language } from './translations';
 
 export interface Project {
   id: string;
   title: string;
-  category: string;
+  // Updated to localized object to match constant data
+  category: Record<Language, string>;
   imageUrl: string;
   gallery: string[];
   year: string;

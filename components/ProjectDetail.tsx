@@ -3,22 +3,25 @@ import React, { useState } from 'react';
 import { Project } from '../types';
 import { PROJECTS } from '../constants';
 import Project3DViewer from './Project3DViewer';
+import { Language, UI_STRINGS } from '../translations';
 
 interface ProjectDetailProps {
   project: Project;
   onBack: () => void;
+  lang: Language;
   onNavigateToProject?: (id: string) => void;
 }
 
-const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack, onNavigateToProject }) => {
+const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack, lang, onNavigateToProject }) => {
   const [show3D, setShow3D] = useState(false);
+  const t = UI_STRINGS[lang].projectDetail;
 
   const currentIndex = PROJECTS.findIndex(p => p.id === project.id);
   const nextProject = PROJECTS[(currentIndex + 1) % PROJECTS.length];
   const prevProject = PROJECTS[(currentIndex - 1 + PROJECTS.length) % PROJECTS.length];
 
   const handleDownloadPDF = () => {
-    const dummyContent = `STRUCTURA ARCHITECTURAL ENGINEERING\n====================================\nProject: ${project.title}\nCategory: ${project.category}\nYear: ${project.year}\nReference: ST-${project.year}-${project.id.padStart(3, '0')}\n\nFull case study and technical specification dossier for the ${project.title} project. All structural nodes verified to BIM Level 400 standard.`;
+    const dummyContent = `STRUCTURA ARCHITECTURAL ENGINEERING\n====================================\nProject: ${project.title}\nCategory: ${project.category[lang]}\nYear: ${project.year}\nReference: ST-${project.year}-${project.id.padStart(3, '0')}\n\nFull case study and technical specification dossier for the ${project.title} project. All structural nodes verified to BIM Level 400 standard.`;
     const blob = new Blob([dummyContent], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -50,10 +53,10 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack, onNaviga
             className="flex items-center space-x-3 text-white/50 hover:text-amber-500 transition-colors uppercase tracking-[0.3em] text-[10px] font-architectural font-bold mb-10 group"
           >
             <svg className="w-4 h-4 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-            <span>Exit to Gallery</span>
+            <span>{t.back}</span>
           </button>
           
-          <span className="text-amber-500 font-bold uppercase tracking-[0.4em] mb-4 text-[11px] block font-architectural">{project.category}</span>
+          <span className="text-amber-500 font-bold uppercase tracking-[0.4em] mb-4 text-[11px] block font-architectural">{project.category[lang]}</span>
           <h1 className="text-5xl md:text-9xl font-architectural font-bold text-white tracking-tighter uppercase mb-10 leading-[0.85] max-w-5xl">
             {project.title}
           </h1>
@@ -65,7 +68,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack, onNaviga
                 className="bg-amber-600 hover:bg-amber-700 text-white px-10 py-5 rounded-sm text-[10px] font-architectural font-bold uppercase tracking-[0.25em] transition-all flex items-center space-x-4 shadow-2xl"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"/></svg>
-                <span>Initialize BIM Simulation</span>
+                <span>{t.simulate}</span>
               </button>
             )}
             <button 
@@ -73,7 +76,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack, onNaviga
               className="border border-white/20 hover:border-amber-500 hover:text-amber-500 text-white px-10 py-5 rounded-sm text-[10px] font-architectural font-bold uppercase tracking-[0.25em] transition-all flex items-center space-x-4 backdrop-blur-md"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-              <span>Download Blueprint</span>
+              <span>{t.blueprint}</span>
             </button>
           </div>
         </div>
@@ -84,9 +87,9 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack, onNaviga
         <div className="container mx-auto px-6">
            <div className="flex flex-col md:flex-row gap-8 mb-20">
              <div className="md:w-1/3">
-                <h2 className="text-zinc-500 font-architectural font-bold uppercase tracking-[0.3em] text-[10px] mb-8">Spatial Study</h2>
+                <h2 className="text-zinc-500 font-architectural font-bold uppercase tracking-[0.3em] text-[10px] mb-8">{t.study}</h2>
                 <p className="text-zinc-400 font-light leading-relaxed text-lg">
-                  Every structural junction of the {project.title} was optimized for maximum load efficiency. Our imagery captures the transition from raw structural integrity to finished architectural refinement.
+                  {t.studyDesc}
                 </p>
              </div>
              <div className="md:w-2/3 grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -112,7 +115,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack, onNaviga
               onClick={() => onNavigateToProject?.(prevProject.id)}
               className="group flex flex-col items-start space-y-6 w-full md:w-auto"
             >
-              <span className="text-zinc-600 font-architectural font-bold uppercase tracking-[0.3em] text-[9px] group-hover:text-amber-500 transition-colors">Previous Milestone</span>
+              <span className="text-zinc-600 font-architectural font-bold uppercase tracking-[0.3em] text-[9px] group-hover:text-amber-500 transition-colors">{t.prev}</span>
               <span className="text-3xl md:text-5xl text-white font-architectural font-bold uppercase tracking-tighter group-hover:text-amber-500 transition-colors">{prevProject.title}</span>
             </button>
             
@@ -120,7 +123,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack, onNaviga
               onClick={() => onNavigateToProject?.(nextProject.id)}
               className="group flex flex-col items-end space-y-6 text-right w-full md:w-auto"
             >
-              <span className="text-zinc-600 font-architectural font-bold uppercase tracking-[0.3em] text-[9px] group-hover:text-amber-500 transition-colors">Next Milestone</span>
+              <span className="text-zinc-600 font-architectural font-bold uppercase tracking-[0.3em] text-[9px] group-hover:text-amber-500 transition-colors">{t.next}</span>
               <span className="text-3xl md:text-5xl text-white font-architectural font-bold uppercase tracking-tighter group-hover:text-amber-500 transition-colors">{nextProject.title}</span>
             </button>
           </div>
