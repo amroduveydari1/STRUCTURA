@@ -1,0 +1,76 @@
+
+import React, { useState } from 'react';
+import LegacyPresentation from './LegacyPresentation';
+import { Language, UI_STRINGS } from '../translations';
+
+const Hero: React.FC<{ lang: Language }> = ({ lang }) => {
+  const [showLegacy, setShowLegacy] = useState(false);
+  const t = UI_STRINGS[lang].hero;
+
+  const scrollToProjects = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const element = document.getElementById('projects');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <section className="relative h-screen flex items-center overflow-hidden bg-zinc-950">
+      <div className="absolute inset-0 z-0">
+        <img 
+          src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=90&w=2400" 
+          alt="Structura Hero" 
+          className="w-full h-full object-cover opacity-40"
+        />
+        <div className="absolute inset-0 bg-grid-wallpaper opacity-20"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/70 to-transparent rtl:bg-gradient-to-l"></div>
+      </div>
+
+      <div className="container mx-auto px-6 md:px-12 lg:px-16 relative z-10 pt-10">
+        <div className="max-w-5xl animate-fade-in-up">
+          <div className="flex items-center space-x-4 rtl:space-x-reverse mb-6 md:mb-10">
+            <div className="w-10 md:w-16 h-[1px] bg-amber-500"></div>
+            <span className="text-amber-500 font-architectural font-bold uppercase tracking-[0.5em] text-[10px] md:text-xs">
+              {t.legacy}
+            </span>
+          </div>
+          
+          <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-architectural font-bold text-white mb-8 md:mb-12 leading-[1.1] md:leading-[1] tracking-tighter uppercase">
+            {t.title}
+          </h1>
+          
+          <p className="text-zinc-400 text-sm md:text-lg lg:text-xl max-w-2xl mb-12 md:mb-16 lg:mb-20 leading-relaxed font-light border-l-2 rtl:border-l-0 rtl:border-r-2 border-amber-600/30 pl-6 md:pl-10 rtl:pl-0 rtl:pr-6 md:rtl:pr-10 text-left rtl:text-right">
+            {t.subtitle}
+          </p>
+          
+          <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-6 md:space-x-10 rtl:space-x-reverse">
+            <button 
+              onClick={scrollToProjects}
+              className="group relative overflow-hidden bg-amber-600 text-white px-10 md:px-16 py-5 md:py-7 lg:py-8 font-architectural font-bold uppercase tracking-[0.3em] text-[10px] transition-all text-center shadow-2xl"
+            >
+              <span className="relative z-10">{t.explore}</span>
+              <div className="absolute inset-0 bg-amber-700 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+            </button>
+            <button 
+              onClick={() => setShowLegacy(true)}
+              className="group relative border border-white/20 hover:border-white/50 text-white px-10 md:px-16 py-5 md:py-7 lg:py-8 font-architectural font-bold uppercase tracking-[0.3em] text-[10px] transition-all text-center"
+            >
+              <span className="relative z-10">{t.dossier}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="absolute bottom-10 md:bottom-16 left-6 md:left-12 rtl:left-auto rtl:right-6 md:rtl:right-12 flex items-center space-x-6 rtl:space-x-reverse text-white/20 text-[8px] md:text-[9px] uppercase tracking-[0.4em] font-architectural font-bold">
+        <span>{t.precision}: 0.001mm</span>
+        <div className="w-8 md:w-12 h-[1px] bg-white/10"></div>
+        <span>{t.level}: 400</span>
+      </div>
+
+      {showLegacy && <LegacyPresentation onClose={() => setShowLegacy(false)} lang={lang} />}
+    </section>
+  );
+};
+
+export default Hero;
