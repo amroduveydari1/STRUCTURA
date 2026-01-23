@@ -1,30 +1,7 @@
 {
   "name": "structura",
-  "private": false,
-  "version": "1.0.0",
-  "description": "Modern architecture and engineering portfolio platform powered by React, Three.js, and AI",
-  "author": "Amrod Uveydari <amroduveydari1@github.com>",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/amroduveydari1/STRUCTURA.git"
-  },
-  "bugs": {
-    "url": "https://github.com/amroduveydari1/STRUCTURA/issues"
-  },
-  "homepage": "https://github.com/amroduveydari1/STRUCTURA#readme",
-  "keywords": [
-    "architecture",
-    "engineering",
-    "react",
-    "threejs",
-    "3d-visualization",
-    "ai",
-    "gemini",
-    "portfolio",
-    "vite",
-    "typescript"
-  ],
+  "private": true,
+  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",

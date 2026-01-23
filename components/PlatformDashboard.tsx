@@ -1,13 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Language } from '../translations';
-
-interface WorkflowStep {
-  id: string;
-  stage: string;
-  date: string;
-  progress: number;
-}
 
 interface PlatformDashboardProps {
   onBack: () => void;
@@ -20,516 +13,532 @@ const TRANSLATIONS = {
     sandbox: "Sandbox Session",
     relay: "Node Relay: Operational",
     intel: "System Intel",
-    analysis: "Analysis",
-    workflow: "Workflow",
-    compliance: "Compliance",
+    analysis: "Structural Lab",
+    workflow: "Builder Ops",
+    compliance: "Eco Audit",
     terminate: "Terminate Session",
-    protocol: "Protocol: Read-Only Intelligence Relay",
     parameters: "Scenario Parameters",
     material: "Indicative Material",
     height: "Nominal Height (m)",
     wind: "Wind Case (km/h)",
     span: "Intended Span (m)",
     load: "Target Load (kg)",
-    footing: "Indicative Footing",
-    seismic: "Seismic Assessment Zone",
-    area: "Planned Area (m²)",
     verified: "DESIGN INTELLIGENCE VERIFIED",
     warning: "SCENARIO TOLERANCE ALERT",
-    interpretation: "Indicative Parameter Interpretation",
+    interpretation: "Parameter Interpretation",
     deflection: "Interpreted Deflection",
     stress: "Estimated Stress",
-    windPressure: "Wind Scenario Pressure",
-    soilLoad: "Indicative Soil Load",
-    mass: "Estimated Structural Mass",
+    mass: "Structural Mass",
     export: "Export Coordination Summary",
-    verifyBim: "Verify BIM Link",
-    notice: "Notice: Metrics displayed are based on simplified engineering logic for scenario support. Final analysis must be executed in certified BIM environments.",
-    reportTitle: "STRUCTURA | COORDINATION SUMMARY",
-    reportDisclaimer: "IMPORTANT NOTICE: This summary is for coordination, early-stage decision support, and scenario evaluation ONLY. It is NOT a certified structural analysis or professional approval document."
+    thermal: "Thermal Expansion",
+    deltaT: "Temp Delta (°C)",
+    expansion: "Expansion ΔL (mm)",
+    concreteVol: "Concrete Vol (m³)",
+    rebarWeight: "Rebar Est (tons)",
+    carbon: "Carbon Impact (kg CO₂)",
+    leadTime: "Procurement Lead Time",
+    procurement: "Procurement Logic",
+    logistics: "Logistics Relay",
+    days: "Est. Days",
+    summary: "Coordination Summary",
+    seismic: "Seismic Base Shear (kN)",
+    efficiency: "Structural Efficiency",
+    logisticsActive: "LOGISTICS STREAM ACTIVE",
+    nodeSync: "BIM NODE SYNC: STABLE"
   },
   ar: {
     missionControl: "مركز التحكم",
     sandbox: "جلسة اختبار",
     relay: "مرحل العقدة: يعمل",
     intel: "استخبارات النظام",
-    analysis: "التحليل",
-    workflow: "سير العمل",
-    compliance: "الامتثال",
+    analysis: "المختبر الإنشائي",
+    workflow: "عمليات البناء",
+    compliance: "التدقيق البيئي",
     terminate: "إنهاء الجلسة",
-    protocol: "البروتوكول: مرحل استخباراتي للقراءة فقط",
     parameters: "معايير السيناريو",
     material: "المادة المقترحة",
     height: "الارتفاع الاسمي (م)",
     wind: "حالة الرياح (كم/س)",
     span: "المسافة المقصودة (م)",
     load: "الحمل المستهدف (كجم)",
-    footing: "القواعد المقترحة",
-    seismic: "منطقة التقييم الزلزالي",
-    area: "المساحة المخططة (م²)",
     verified: "تم التحقق من ذكاء التصميم",
     warning: "تنبيه تسامح السيناريو",
-    interpretation: "تفسير المعايير المقترحة",
+    interpretation: "تفسير المعايير",
     deflection: "الترخيم المفسر",
     stress: "الإجهاد المقدر",
-    windPressure: "ضغط سيناريو الرياح",
-    soilLoad: "حمل التربة المقترح",
-    mass: "الكتلة الإنشائية المقدرة",
-    export: "تصدير ملخص التنسيق",
-    verifyBim: "التحقق من رابط BIM",
-    notice: "ملاحظة: المقاييس المعروضة تعتمد على منطق هندسي مبسط لدعم السيناريو. يجب تنفيذ التحليل النهائي في بيئات BIM معتمدة.",
-    reportTitle: "ستركتورا | ملخص التنسيق",
-    reportDisclaimer: "ملاحظة هامة: هذا الملخص مخصص للتنسيق ودعم القرار في المراحل المبكرة وتقييم السيناريوهات فقط. إنه ليس تحليلاً إنشائيًا معتمدًا أو وثيقة اعتماد مهنية."
+    mass: "الكتلة الإنشائية",
+    export: "تصدير الملخص",
+    thermal: "التمدد الحراري",
+    deltaT: "فرق الحرارة (°م)",
+    expansion: "التمدد ΔL (مم)",
+    concreteVol: "حجم الخرسانة (م³)",
+    rebarWeight: "تقدير حديد التسليح (طن)",
+    carbon: "الأثر الكربوني (كجم CO₂)",
+    leadTime: "مدة التوريد",
+    procurement: "منطق المشتريات",
+    logistics: "مرحل اللوجستيات",
+    days: "أيام مقدرة",
+    summary: "ملخص التنسيق",
+    seismic: "القص القاعدي الزلزالي (kN)",
+    efficiency: "الكفاءة الإنشائية",
+    logisticsActive: "تدفق الخدمات اللوجستية نشط",
+    nodeSync: "مزامنة عقدة BIM: مستقرة"
   },
   tr: {
     missionControl: "GÖREV KONTROLÜ",
     sandbox: "Sandbox Oturumu",
     relay: "Düğüm Rölesi: Çalışıyor",
     intel: "Sistem Bilgisi",
-    analysis: "Analiz",
-    workflow: "İş Akışı",
-    compliance: "Uyumluluk",
+    analysis: "Yapı Laboratuvarı",
+    workflow: "İnşaat Op.",
+    compliance: "Eko Denetim",
     terminate: "Oturumu Sonlandır",
-    protocol: "Protokol: Salt Okunur İstihbarat Rölesi",
     parameters: "Senaryo Parametreleri",
     material: "Gösterge Malzemesi",
-    height: "Nominal Yükseklik (m)",
-    wind: "Rüzgar Durumu (km/s)",
-    span: "Planlanan Açıklık (m)",
-    load: "Hedef Yük (kg)",
-    footing: "Gösterge Temeli",
-    seismic: "Sismik Değerlendirme Bölgesi",
-    area: "Planlanan Alan (m²)",
+    height: "Yükseklik (m)",
+    wind: "Rüzgar (km/s)",
+    span: "Açıklık (m)",
+    load: "Yük (kg)",
     verified: "TASARIM ZEKASI DOĞRULANDI",
-    warning: "SENARYO TOLERANS UYARISI",
-    interpretation: "Gösterge Parametresi Yorumu",
-    deflection: "Yorumlanan Sehim",
-    stress: "Tahmini Gerilme",
-    windPressure: "Rüzgar Senaryo Basıncı",
-    soilLoad: "Gösterge Zemin Yükü",
-    mass: "Tahmini Yapısal Kütle",
+    warning: "TOLERANS UYARISI",
+    interpretation: "Parametre Yorumu",
+    deflection: "Sehim",
+    stress: "Gerilme",
+    mass: "Yapısal Kütle",
     export: "Koordinasyon Özetini Dışa Aktar",
-    verifyBim: "BIM Bağlantısını Doğrula",
-    notice: "Not: Görüntülenen metrikler, senaryo desteği için basitleştirilmiş mühendislik mantığına dayanmaktadır. Nihai analiz sertifikalı BIM ortamlarında yürütülmelidir.",
-    reportTitle: "STRUCTURA | KOORDİNASYON ÖZETİ",
-    reportDisclaimer: "ÖNEMLİ NOT: Bu özet YALNIZCA koordinasyon, erken aşama karar desteği ve senaryo değerlendirmesi içindir. Sertifikalı bir yapısal analiz veya profesyonel onay belgesi DEĞİLDİR."
+    thermal: "Termal Genleşme",
+    deltaT: "Sıcaklık Farkı (°C)",
+    expansion: "Genleşme ΔL (mm)",
+    concreteVol: "Beton Hacmi (m³)",
+    rebarWeight: "Donatı Tahmini (ton)",
+    carbon: "Karbon Etkisi (kg CO₂)",
+    leadTime: "Tedarik Süresi",
+    procurement: "Satın Alma Mantığı",
+    logistics: "Lojistik Rölesi",
+    days: "Tahmini Gün",
+    summary: "Koordinasyon Özeti",
+    seismic: "Sismik Taban Kesme (kN)",
+    efficiency: "Yapısal Verimlilik",
+    logisticsActive: "LOJİSTİK AKIŞI AKTİF",
+    nodeSync: "BIM DÜĞÜM SENKRONİZASYONU: STABİL"
   },
   de: {
     missionControl: "MISSIONSKONTROLLE",
     sandbox: "Sandbox-Sitzung",
     relay: "Knoten-Relais: Betriebsbereit",
     intel: "System-Informationen",
-    analysis: "Analyse",
-    workflow: "Arbeitsablauf",
-    compliance: "Compliance",
+    analysis: "Strukturlabor",
+    workflow: "Bau-Ops",
+    compliance: "Öko-Audit",
     terminate: "Sitzung beenden",
-    protocol: "Protokoll: Schreibgeschütztes Intelligenz-Relais",
     parameters: "Szenario-Parameter",
     material: "Indikatives Material",
-    height: "Nominale Höhe (m)",
+    height: "Höhe (m)",
     wind: "Windfall (km/h)",
-    span: "Geplante Spannweite (m)",
-    load: "Ziel-Last (kg)",
-    footing: "Indikatives Fundament",
-    seismic: "Seismische Bewertungszone",
-    area: "Geplante Fläche (m²)",
+    span: "Spannweite (m)",
+    load: "Last (kg)",
     verified: "DESIGN-INTELLIGENZ VERIFIZIERT",
-    warning: "SZENARIO-TOLERANZALARM",
-    interpretation: "Interpretation indikativer Parameter",
-    deflection: "Interpretierte Durchbiegung",
-    stress: "Geschätzte Spannung",
-    windPressure: "Wind-Szenariodruck",
-    soilLoad: "Indikative Bodenlast",
-    mass: "Geschätzte Strukturmasse",
-    export: "Koordinationszusammenfassung exportieren",
-    verifyBim: "BIM-Link verifizieren",
-    notice: "Hinweis: Die angezeigten Kennzahlen basieren auf vereinfachter Konstruktionslogik. Die endgültige Analyse muss in zertifizierten BIM-Umgebungen erfolgen.",
-    reportTitle: "STRUCTURA | KOORDINATIONSZUSAMMENFASSUNG",
-    reportDisclaimer: "WICHTIGER HINWEIS: Diese Zusammenfassung dient NUR der Koordination und Szenariobewertung. Sie ist KEINE zertifizierte Strukturanalyse."
+    warning: "TOLERANZALARM",
+    interpretation: "Parameter-Interpretation",
+    deflection: "Durchbiegung",
+    stress: "Spannung",
+    mass: "Strukturmasse",
+    export: "Zusammenfassung exportieren",
+    thermal: "Thermische Ausdehnung",
+    deltaT: "Temperaturdelta (°C)",
+    expansion: "Ausdehnung ΔL (mm)",
+    concreteVol: "Betonvolumen (m³)",
+    rebarWeight: "Bewehrungsest. (Tonnen)",
+    carbon: "CO₂-Auswirkung (kg)",
+    leadTime: "Beschaffungszeit",
+    procurement: "Beschaffungslogik",
+    logistics: "Logistik-Relais",
+    days: "Gesch. Tage",
+    summary: "Koordinationsbericht",
+    seismic: "Sismische Basisscherung (kN)",
+    efficiency: "Strukturelle Effizienz",
+    logisticsActive: "LOGISTIK-STREAM AKTIV",
+    nodeSync: "BIM-KNOTEN-SYNC: STABIL"
   }
 };
 
 const MATERIALS = [
-  { id: 'steel', name: { en: 'Reinforced Steel', ar: 'الفولاذ المقوى', tr: 'Güçlendirilmiş Çelik', de: 'Verstärkter Stahl' }, modulus: 200, yieldStrength: 250, density: 7850 },
-  { id: 'concrete', name: { en: 'C30 Concrete', ar: 'خرسانة C30', tr: 'C30 Beton', de: 'C30 Beton' }, modulus: 30, yieldStrength: 30, density: 2400 },
-  { id: 'carbon', name: { en: 'Carbon Composite', ar: 'كربون مركب', tr: 'Karbon Kompozit', de: 'Kohlenstoffverbundstoff' }, modulus: 250, yieldStrength: 600, density: 1600 },
-  { id: 'timber', name: { en: 'Glulam Timber', ar: 'خشب غلولام', tr: 'Lamine Ahşap', de: 'Leimholz' }, modulus: 12, yieldStrength: 24, density: 600 }
-];
-
-const SEISMIC_ZONES = [
-  { level: '1', label: { en: 'Stable', ar: 'مستقر', tr: 'Stabil', de: 'Stabil' }, multiplier: 1.0 },
-  { level: '2', label: { en: 'Moderate', ar: 'متوسط', tr: 'Orta', de: 'Moderat' }, multiplier: 1.25 },
-  { level: '3', label: { en: 'High Risk', ar: 'عالي المخاطر', tr: 'Yüksek Risk', de: 'Hohes Risiko' }, multiplier: 1.6 },
-  { level: '4', label: { en: 'Critical', ar: 'حرج', tr: 'Kritik', de: 'Kritisch' }, multiplier: 2.1 }
+  { id: 'steel', name: { en: 'Reinforced Steel', ar: 'الفولاذ المقوى', tr: 'Çelik', de: 'Stahl' }, modulus: 200, yieldStrength: 250, density: 7850, coeff: 12e-6, co2Factor: 1.85, lead: 45 },
+  { id: 'concrete', name: { en: 'C30 Concrete', ar: 'خرسانة C30', tr: 'Beton', de: 'Beton' }, modulus: 30, yieldStrength: 30, density: 2400, coeff: 10e-6, co2Factor: 0.12, lead: 2 },
+  { id: 'carbon', name: { en: 'Carbon Composite', ar: 'كربون مركب', tr: 'Karbon', de: 'Karbon' }, modulus: 250, yieldStrength: 600, density: 1600, coeff: 2e-6, co2Factor: 2.5, lead: 90 },
+  { id: 'timber', name: { en: 'Glulam Timber', ar: 'خشب غلولام', tr: 'Ahşap', de: 'Holz' }, modulus: 12, yieldStrength: 24, density: 600, coeff: 5e-6, co2Factor: -0.8, lead: 30 }
 ];
 
 const PlatformDashboard: React.FC<PlatformDashboardProps> = ({ onBack, lang: globalLang = 'en' }) => {
   const [lang, setInternalLang] = useState<Language>(globalLang);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [authMode, setAuthMode] = useState<'selection' | 'login'>('selection');
-  const [userType, setUserType] = useState<'guest' | 'professional' | null>(null);
-  const [activeTool, setActiveTool] = useState<'intel' | 'calc' | 'workflow' | 'audit'>('intel');
-  const [isSyncing, setIsSyncing] = useState(false);
+  const [activeTool, setActiveTool] = useState<'intel' | 'calc' | 'workflow' | 'audit'>('calc');
   const [logs, setLogs] = useState<string[]>([]);
-  
-  const [credentials, setCredentials] = useState({ email: '', password: '' });
+  const logContainerRef = useRef<HTMLDivElement>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   const t = TRANSLATIONS[lang];
   const isRTL = lang === 'ar';
 
-  useEffect(() => {
-     setLogs([
-        `[SYSTEM] Structura Intelligence Interface Initialized.`,
-        `[LANG] Active locale: ${lang.toUpperCase()}`
-     ]);
-  }, [lang]);
-
-  // Analysis Parameters
   const [params, setParams] = useState({
-    span: 12.5,
-    load: 4500,
+    span: 12.0,
+    load: 5000,
     material: 'steel',
-    depth: 450, 
-    width: 200, 
+    tempDelta: 35,
+    width: 300,
+    depth: 600,
     safetyFactor: 1.5,
-    seismicZone: '1',
-    windSpeed: 120, 
-    height: 35, 
-    footingArea: 4.5 
+    seismicZone: 0.2, // PGA
   });
 
   const [results, setResults] = useState({
     deflection: 0,
     stress: 0,
-    windPressure: 0,
-    soilPressure: 0,
     weight: 0,
+    expansion: 0,
+    carbon: 0,
+    concVol: 0,
+    rebarTons: 0,
+    seismicForce: 0,
     isCompliant: true
   });
 
   useEffect(() => {
     if (!isAuthenticated) return;
     const mat = MATERIALS.find(m => m.id === params.material)!;
-    const seismic = SEISMIC_ZONES.find(z => z.level === params.seismicZone)!;
-
-    const momentOfInertia = (params.width * Math.pow(params.depth, 3)) / 12000;
-    const E = mat.modulus;
-    const P = params.load;
-    const L = params.span;
-    let rawDeflection = (P * Math.pow(L, 3)) / (48 * E * momentOfInertia);
-
-    const finalDeflection = (rawDeflection * params.safetyFactor * seismic.multiplier) / 100;
-    const windPressureKPa = (0.5 * 1.225 * Math.pow(params.windSpeed / 3.6, 2) * 1.2 * (1 + params.height/100)) / 1000;
-    const areaSqM = (params.width / 1000) * (params.depth / 1000) * 0.8;
-    const stressMPa = (params.load * 9.81) / (areaSqM * 1000000);
-    const soilPressureKPa = (params.load * 9.81) / (params.footingArea * 1000);
-    const weightKg = areaSqM * params.span * mat.density;
+    
+    // Physics Logic
+    const I = (params.width * Math.pow(params.depth, 3)) / 12000;
+    const def = (params.load * Math.pow(params.span, 3)) / (48 * mat.modulus * I) * params.safetyFactor;
+    const area = (params.width * params.depth) / 1000000;
+    const mass = area * params.span * mat.density;
+    const stress = (params.load * 9.81) / (area * 1000000);
+    const exp = params.span * 1000 * mat.coeff * params.tempDelta;
+    const co2 = mass * mat.co2Factor;
+    
+    const concV = area * params.span;
+    const rebarT = params.material === 'concrete' ? concV * 0.12 : (params.material === 'steel' ? mass / 1000 : 0);
+    const seismic = (mass / 1000) * params.seismicZone * 9.81;
 
     setResults({
-      deflection: parseFloat(finalDeflection.toFixed(3)),
-      stress: parseFloat(stressMPa.toFixed(2)),
-      windPressure: parseFloat(windPressureKPa.toFixed(2)),
-      soilPressure: parseFloat(soilPressureKPa.toFixed(2)),
-      weight: Math.round(weightKg),
-      isCompliant: finalDeflection < 5.0 && stressMPa < mat.yieldStrength
+      deflection: parseFloat(def.toFixed(2)),
+      stress: parseFloat(stress.toFixed(1)),
+      weight: Math.round(mass),
+      expansion: parseFloat(exp.toFixed(2)),
+      carbon: Math.round(co2),
+      concVol: parseFloat(concV.toFixed(2)),
+      rebarTons: parseFloat(rebarT.toFixed(2)),
+      seismicForce: parseFloat(seismic.toFixed(1)),
+      isCompliant: def < 15.0 && stress < mat.yieldStrength
     });
-  }, [params, isAuthenticated]);
+
+    addLog(`Node Sync: ${mat.id.toUpperCase()} | Stress ${stress.toFixed(1)} MPa | Safety ${params.safetyFactor}`);
+  }, [params, isAuthenticated, lang]);
 
   const addLog = (msg: string) => {
-    setLogs(prev => [`[${new Date().toLocaleTimeString()}] ${msg}`, ...prev].slice(0, 5));
+    const time = new Date().toLocaleTimeString('en-GB', { hour12: false });
+    setLogs(prev => [...prev, `[${time}] ${msg}`].slice(-10));
   };
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleLogin = () => {
     setIsLoggingIn(true);
     setTimeout(() => {
-      setUserType('professional');
       setIsAuthenticated(true);
       setIsLoggingIn(false);
-      addLog("Node Entry Verified: " + credentials.email);
-    }, 1500);
-  };
-
-  const handleGuestAccess = () => {
-    setIsLoggingIn(true);
-    setTimeout(() => {
-      setUserType('guest');
-      setIsAuthenticated(true);
-      setIsLoggingIn(false);
-      addLog("Scenario Evaluation Sandbox Initialized.");
-    }, 1000);
-  };
-
-  const exportReport = () => {
-    const reportId = Math.random().toString(36).substr(2, 9).toUpperCase();
-    const content = `
-============================================================
-      ${t.reportTitle}
-============================================================
-ID: ${reportId}
-USER: ${userType?.toUpperCase()}
-DATE: ${new Date().toLocaleString()}
-------------------------------------------------------------
-
-1. ${t.parameters}
-- ${t.material}: ${MATERIALS.find(m => m.id === params.material)?.name[lang]}
-- ${t.height}: ${params.height}m
-- ${t.wind}: ${params.windSpeed} km/h
-- ${t.seismic}: ${params.seismicZone}
-
-2. ${t.interpretation}
-- ${t.stress}: ${results.stress} MPa
-- ${t.deflection}: ${results.deflection} mm
-- ${t.mass}: ${results.weight.toLocaleString()} kg
-- ${t.soilLoad}: ${results.soilPressure} kPa
-
-${t.reportDisclaimer}
-============================================================
-    `;
-
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Structura_Summary_${reportId}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    addLog(`Dossier ${reportId} Exported.`);
+      addLog("Core Logic Verified. Session Initialized.");
+    }, 1200);
   };
 
   if (!isAuthenticated) {
     return (
-      <div className={`fixed inset-0 z-[100] bg-zinc-950 flex flex-col items-center justify-center p-6 overflow-hidden ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+      <div className="fixed inset-0 z-[100] bg-zinc-950 flex flex-col items-center justify-center p-6">
         <div className="absolute inset-0 bg-grid-wallpaper opacity-10 pointer-events-none"></div>
-        <div className="w-full max-w-md relative z-10 animate-fade-in-up">
-          <div className="text-center mb-16">
-            <div className="w-16 h-16 bg-white rounded-sm flex items-center justify-center transform rotate-45 mx-auto mb-10 shadow-[0_0_50px_rgba(255,255,255,0.1)]">
-              <div className="w-8 h-8 bg-zinc-950 transform -rotate-45"></div>
-            </div>
-            <h1 className="text-3xl md:text-5xl font-architectural font-bold text-white tracking-tighter uppercase mb-4 leading-none">
-              {t.missionControl}
-            </h1>
-            <p className="text-zinc-500 font-architectural text-[9px] uppercase tracking-[0.4em]">v2.5.0 Intelligence Relay</p>
+        <div className="w-full max-w-sm relative z-10 animate-fade-in-up text-center">
+          <div className="w-16 h-16 bg-white rounded-sm flex items-center justify-center transform rotate-45 mx-auto mb-10 shadow-2xl">
+            <div className="w-8 h-8 bg-zinc-950 transform -rotate-45"></div>
           </div>
-
-          <div className="space-y-6">
-            {authMode === 'selection' ? (
-              <>
-                <button onClick={() => setAuthMode('login')} className="w-full bg-white text-zinc-950 py-6 font-architectural font-bold uppercase tracking-[0.3em] text-[11px] hover:bg-amber-600 hover:text-white transition-all shadow-xl">
-                  {lang === 'en' ? 'Professional Entry' : lang === 'ar' ? 'دخول الخبراء' : lang === 'tr' ? 'Profesyonel Giriş' : 'Professioneller Zugang'}
-                </button>
-                <button onClick={handleGuestAccess} className="w-full border border-white/10 text-zinc-400 py-6 font-architectural font-bold uppercase tracking-[0.3em] text-[11px] hover:bg-white/5 transition-all">
-                  {lang === 'en' ? 'Guest Sandbox' : lang === 'ar' ? 'بيئة الاختبار' : lang === 'tr' ? 'Misafir Alanı' : 'Gast-Sandbox'}
-                </button>
-              </>
-            ) : (
-              <form onSubmit={handleLogin} className="space-y-6">
-                <input required type="email" value={credentials.email} onChange={(e) => setCredentials({...credentials, email: e.target.value})} className="w-full bg-zinc-900 border border-zinc-800 py-4 px-6 text-white focus:outline-none focus:border-amber-600" placeholder="ID" />
-                <input required type="password" value={credentials.password} onChange={(e) => setCredentials({...credentials, password: e.target.value})} className="w-full bg-zinc-900 border border-zinc-800 py-4 px-6 text-white focus:outline-none focus:border-amber-600" placeholder="KEY" />
-                <button type="submit" className="w-full bg-amber-600 text-white py-6 font-architectural font-bold uppercase tracking-[0.3em] text-[11px]">{lang === 'en' ? 'Initialize' : lang === 'ar' ? 'تهيئة الجلسة' : lang === 'tr' ? 'Başlat' : 'Initialisieren'}</button>
-                <button type="button" onClick={() => setAuthMode('selection')} className="w-full text-zinc-600 text-[10px] font-bold uppercase tracking-widest">{lang === 'en' ? 'Back' : lang === 'ar' ? 'رجوع' : lang === 'tr' ? 'Geri' : 'Zurück'}</button>
-              </form>
-            )}
-            <div className="pt-10 flex justify-center space-x-6 rtl:space-x-reverse">
-              {(['en', 'ar', 'tr', 'de'] as Language[]).map(l => (
-                <button key={l} onClick={() => setInternalLang(l)} className={`text-[10px] font-bold uppercase tracking-widest ${lang === l ? 'text-amber-500' : 'text-zinc-700'}`}>{l}</button>
-              ))}
-            </div>
-          </div>
+          <h1 className="text-3xl font-architectural font-bold text-white tracking-tighter uppercase mb-2">{t.missionControl}</h1>
+          <p className="text-zinc-600 font-architectural text-[9px] uppercase tracking-[0.4em] mb-12">Operator Access Required</p>
+          <button onClick={handleLogin} disabled={isLoggingIn} className="w-full bg-white hover:bg-amber-600 hover:text-white text-zinc-950 py-5 font-architectural font-bold uppercase tracking-[0.3em] text-[10px] transition-all">
+            {isLoggingIn ? 'Verifying Credentials...' : 'Initialize Mission'}
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`min-h-screen bg-zinc-950 text-zinc-300 pt-32 pb-24 font-inter selection:bg-amber-600 selection:text-white ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
-      <div className="container mx-auto px-6 mb-12">
-        <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-10">
-          <div>
-            <div className={`flex items-center space-x-3 mb-4 ${isRTL ? 'space-x-reverse' : ''}`}>
-              <span className={`text-[8px] font-bold uppercase px-2 py-0.5 rounded-sm tracking-widest ${userType === 'professional' ? 'bg-amber-600 text-white' : 'bg-zinc-800 text-zinc-400'}`}>
-                {t.sandbox}
-              </span>
-              <span className="text-zinc-600 font-mono text-[9px] tracking-widest uppercase">{t.relay}</span>
+    <div className={`fixed inset-0 z-[100] bg-zinc-950 text-zinc-300 flex flex-col font-inter selection:bg-amber-600 ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+      {/* Header */}
+      <header className="h-16 md:h-20 border-b border-white/5 bg-zinc-950/80 backdrop-blur-xl px-6 md:px-8 flex items-center justify-between shrink-0">
+        <div className="flex items-center space-x-4 md:space-x-6 rtl:space-x-reverse">
+          <div className="flex items-center space-x-3 cursor-pointer" onClick={onBack}>
+            <div className="w-6 h-6 bg-white rounded-sm flex items-center justify-center transform rotate-45">
+              <div className="w-3 h-3 bg-zinc-950 transform -rotate-45"></div>
             </div>
-            <h1 className="text-4xl md:text-6xl font-architectural font-bold text-white tracking-tighter uppercase leading-none">
-              {t.missionControl}
-            </h1>
+            <span className="text-xs md:text-sm font-architectural font-bold text-white tracking-tighter uppercase">{t.missionControl}</span>
           </div>
-          
-          <div className="flex flex-wrap bg-zinc-900/50 border border-white/5 p-1 rounded-sm">
+          <div className="h-6 w-[1px] bg-zinc-800 hidden sm:block"></div>
+          <span className="text-[9px] text-zinc-600 font-mono tracking-widest hidden lg:block">{t.relay}</span>
+        </div>
+        
+        <div className="flex items-center space-x-4 md:space-x-6 rtl:space-x-reverse">
+           <div className="flex space-x-2 md:space-x-3 rtl:space-x-reverse">
+             {(['en', 'ar', 'tr', 'de'] as Language[]).map(l => (
+               <button key={l} onClick={() => setInternalLang(l)} className={`text-[9px] font-bold uppercase transition-colors ${lang === l ? 'text-amber-500 underline' : 'text-zinc-600 hover:text-zinc-400'}`}>{l}</button>
+             ))}
+           </div>
+           <button onClick={onBack} className="text-[10px] font-architectural font-bold uppercase tracking-[0.2em] text-zinc-400 hover:text-white border border-white/10 px-4 py-1.5 md:px-5 md:py-2 transition-all">{t.terminate}</button>
+        </div>
+      </header>
+
+      <div className="flex flex-1 overflow-hidden">
+        {/* Navigation Sidebar */}
+        <aside className="w-16 lg:w-64 border-r border-white/5 bg-zinc-950 flex flex-col shrink-0">
+          <nav className="flex-1 py-4 md:py-6">
             {[
-              { id: 'intel', label: t.intel },
-              { id: 'calc', label: t.analysis },
-              { id: 'workflow', label: t.workflow },
-              { id: 'audit', label: t.compliance }
-            ].map(tab => (
+              { id: 'intel', label: t.intel, icon: "M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+              { id: 'calc', label: t.analysis, icon: "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" },
+              { id: 'workflow', label: t.workflow, icon: "M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" },
+              { id: 'audit', label: t.compliance, icon: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" }
+            ].map(item => (
               <button
-                key={tab.id}
-                onClick={() => setActiveTool(tab.id as any)}
-                className={`px-8 py-4 text-[10px] font-architectural font-bold uppercase tracking-[0.2em] transition-all ${
-                  activeTool === tab.id ? 'bg-amber-600 text-white shadow-lg' : 'text-zinc-500 hover:text-white'
-                }`}
+                key={item.id}
+                onClick={() => { setActiveTool(item.id as any); addLog(`Switched Module: ${item.label.toUpperCase()}`); }}
+                className={`w-full flex items-center p-4 lg:px-8 lg:py-5 transition-all group ${activeTool === item.id ? 'bg-amber-600/10 text-amber-500 border-r-2 border-amber-500' : 'text-zinc-600 hover:text-zinc-300'}`}
               >
-                {tab.label}
+                <svg className="w-5 h-5 lg:mr-4 lg:rtl:mr-0 lg:rtl:ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d={item.icon}/></svg>
+                <span className="hidden lg:block text-[9px] font-architectural font-bold uppercase tracking-widest">{item.label}</span>
               </button>
             ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="container mx-auto px-6">
-        {activeTool === 'intel' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 animate-fade-in-up">
-            <div className="lg:col-span-12">
-               <div className="p-12 bg-zinc-900 border border-white/5 relative overflow-hidden">
-                  <div className={`absolute top-0 ${isRTL ? 'left-0' : 'right-0'} w-32 h-32 border-t border-amber-500/10 ${isRTL ? 'border-l' : 'border-r'}`}></div>
-                  <h3 className="text-3xl font-architectural font-bold text-white uppercase tracking-tighter mb-8 leading-none">
-                    {lang === 'en' ? 'Intelligence Architecture' : lang === 'ar' ? 'هندسة المعلومات' : lang === 'tr' ? 'İstihbarat Mimarisi' : 'Intelligenz-Architektur'}
-                  </h3>
-                  <p className="text-zinc-400 text-lg font-light leading-relaxed mb-10 max-w-4xl">
-                    {t.notice}
-                  </p>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-                    {[
-                      { h: t.intel, p: "STRUCTURA v2.5.0" },
-                      { h: t.analysis, p: t.interpretation },
-                      { h: t.relay, p: t.protocol }
-                    ].map((box, i) => (
-                      <div key={i} className="bg-black/40 p-6 border border-white/5">
-                        <h4 className="text-amber-500 font-bold text-[10px] uppercase mb-2">{box.h}</h4>
-                        <p className="text-zinc-500 text-xs">{box.p}</p>
-                      </div>
-                    ))}
-                  </div>
-               </div>
+          </nav>
+          <div className="p-4 md:p-6 border-t border-white/5 hidden lg:block">
+            <div className="bg-zinc-900/50 p-4 rounded-sm border border-white/5">
+              <span className="text-[8px] text-zinc-600 uppercase font-bold tracking-widest block mb-2">Platform Status</span>
+              <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                <span className="text-[10px] text-zinc-400 font-mono">ENCR_SSL_V3</span>
+              </div>
             </div>
           </div>
-        )}
+        </aside>
 
-        {activeTool === 'calc' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-fade-in-up">
-            <div className="lg:col-span-4 space-y-8">
-              <div className="bg-zinc-900/40 border border-white/5 p-8">
-                <h3 className="text-white font-architectural font-bold text-[10px] uppercase tracking-widest mb-10 border-b border-white/5 pb-4">{t.parameters}</h3>
-                <div className="space-y-6">
-                  <div>
-                    <label className="text-[9px] text-zinc-600 uppercase tracking-widest block mb-2 font-bold">{t.material}</label>
-                    <select 
-                      value={params.material}
-                      onChange={(e) => setParams({...params, material: e.target.value})}
-                      className="w-full bg-black border border-zinc-800 py-3 px-4 text-white focus:outline-none focus:border-amber-600 text-[10px] uppercase tracking-widest"
-                    >
-                      {MATERIALS.map(m => <option key={m.id} value={m.id}>{m.name[lang]}</option>)}
-                    </select>
+        {/* Content Area */}
+        <main className="flex-1 overflow-y-auto bg-zinc-950 p-4 md:p-8 lg:p-12 relative scrollbar-hide">
+          <div className="absolute inset-0 bg-grid-wallpaper opacity-5 pointer-events-none"></div>
+          
+          <div className="max-w-6xl mx-auto relative z-10 animate-fade-in-up">
+            {activeTool === 'calc' && (
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-10">
+                {/* Inputs */}
+                <div className="lg:col-span-4 space-y-6">
+                  <div className="bg-zinc-900/40 border border-white/5 p-6 rounded-sm backdrop-blur-sm">
+                    <h3 className="text-[10px] text-white font-architectural font-bold uppercase tracking-widest mb-6 border-b border-white/5 pb-3">{t.parameters}</h3>
+                    <div className="space-y-5">
+                      <div className="space-y-2">
+                        <label className="text-[9px] text-zinc-500 uppercase font-bold tracking-widest">{t.material}</label>
+                        <select value={params.material} onChange={(e) => setParams({...params, material: e.target.value})} className="w-full bg-zinc-950 border border-zinc-800 py-3 px-4 text-white text-xs uppercase focus:border-amber-600 outline-none transition-colors">
+                          {MATERIALS.map(m => <option key={m.id} value={m.id}>{m.name[lang]}</option>)}
+                        </select>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <label className="text-[9px] text-zinc-500 uppercase font-bold tracking-widest">{t.span}</label>
+                          <input type="number" step="0.5" value={params.span} onChange={(e) => setParams({...params, span: parseFloat(e.target.value) || 0})} className="w-full bg-zinc-950 border border-zinc-800 py-3 px-4 text-white font-mono text-xs focus:border-amber-600 outline-none" />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-[9px] text-zinc-500 uppercase font-bold tracking-widest">{t.load}</label>
+                          <input type="number" step="100" value={params.load} onChange={(e) => setParams({...params, load: parseFloat(e.target.value) || 0})} className="w-full bg-zinc-950 border border-zinc-800 py-3 px-4 text-white font-mono text-xs focus:border-amber-600 outline-none" />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[9px] text-zinc-500 uppercase font-bold tracking-widest">{t.deltaT}</label>
+                        <input type="range" min="-20" max="60" value={params.tempDelta} onChange={(e) => setParams({...params, tempDelta: parseInt(e.target.value)})} className="w-full h-1 bg-zinc-800 accent-amber-600 cursor-pointer" />
+                        <div className="flex justify-between text-[10px] text-zinc-600 font-mono"><span>-20°C</span><span className="text-white">{params.tempDelta}°C</span><span>60°C</span></div>
+                      </div>
+                      <div className="space-y-2 pt-2 border-t border-white/5">
+                        <label className="text-[9px] text-zinc-500 uppercase font-bold tracking-widest">Seismic Zone (PGA)</label>
+                        <input type="range" min="0.05" max="0.5" step="0.05" value={params.seismicZone} onChange={(e) => setParams({...params, seismicZone: parseFloat(e.target.value)})} className="w-full h-1 bg-zinc-800 accent-amber-600 cursor-pointer" />
+                        <div className="flex justify-between text-[10px] text-zinc-600 font-mono"><span>0.05g</span><span className="text-white">{params.seismicZone}g</span><span>0.50g</span></div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-[9px] text-zinc-600 uppercase tracking-widest block mb-2 font-bold">{t.height}</label>
-                      <input type="number" value={params.height} onChange={(e) => setParams({...params, height: parseFloat(e.target.value) || 0})} className="w-full bg-black border border-zinc-800 py-3 px-4 text-white font-mono text-sm" />
-                    </div>
-                    <div>
-                      <label className="text-[9px] text-zinc-600 uppercase tracking-widest block mb-2 font-bold">{t.wind}</label>
-                      <input type="number" value={params.windSpeed} onChange={(e) => setParams({...params, windSpeed: parseFloat(e.target.value) || 0})} className="w-full bg-black border border-zinc-800 py-3 px-4 text-white font-mono text-sm" />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-[9px] text-zinc-600 uppercase tracking-widest block mb-2 font-bold">{t.span}</label>
-                      <input type="number" step="0.1" value={params.span} onChange={(e) => setParams({...params, span: parseFloat(e.target.value) || 0})} className="w-full bg-black border border-zinc-800 py-3 px-4 text-white font-mono text-sm" />
-                    </div>
-                    <div>
-                      <label className="text-[9px] text-zinc-600 uppercase tracking-widest block mb-2 font-bold">{t.load}</label>
-                      <input type="number" value={params.load} onChange={(e) => setParams({...params, load: parseFloat(e.target.value) || 0})} className="w-full bg-black border border-zinc-800 py-3 px-4 text-white font-mono text-sm" />
+                  
+                  <div className="bg-zinc-900/40 border border-white/5 p-6 rounded-sm">
+                    <h3 className="text-[10px] text-white font-architectural font-bold uppercase tracking-widest mb-6 border-b border-white/5 pb-3">Structural Safety</h3>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center text-[10px] uppercase font-bold tracking-widest">
+                        <span className="text-zinc-500">{t.seismic}</span>
+                        <span className="text-amber-500 font-mono">{results.seismicForce} kN</span>
+                      </div>
+                      <div className="flex justify-between items-center text-[10px] uppercase font-bold tracking-widest">
+                        <span className="text-zinc-500">{t.efficiency}</span>
+                        <span className="text-amber-500 font-mono">{Math.max(10, Math.min(100, Math.round(100 - results.deflection * 5)))}%</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
 
-            <div className="lg:col-span-5 space-y-8">
-              <div className={`p-10 border transition-all duration-700 ${results.isCompliant ? 'border-amber-600/20 bg-amber-600/5' : 'border-red-600/20 bg-red-600/10'}`}>
-                 <div className="flex justify-between items-start mb-10">
-                   <div>
-                     <span className={`text-[10px] uppercase font-bold tracking-[0.3em] mb-2 block ${results.isCompliant ? 'text-emerald-500' : 'text-red-500'}`}>
-                       {results.isCompliant ? t.verified : t.warning}
-                     </span>
-                     <p className="text-zinc-600 text-[9px] uppercase tracking-widest font-mono">{t.interpretation}</p>
-                   </div>
-                   <div className={`w-3 h-3 rounded-full ${results.isCompliant ? 'bg-emerald-500' : 'bg-red-500 animate-pulse'}`}></div>
-                 </div>
-                 <div className="grid grid-cols-2 gap-10">
-                   <div>
-                      <span className="text-[8px] text-zinc-600 uppercase font-bold tracking-widest block mb-2">{t.deflection}</span>
-                      <div className={`flex items-baseline space-x-2 ${isRTL ? 'space-x-reverse' : ''}`}>
-                         <span className="text-5xl text-white font-mono tracking-tighter">{results.deflection}</span>
-                         <span className="text-xs text-zinc-600 font-mono uppercase">mm</span>
+                {/* Main Results View */}
+                <div className="lg:col-span-8 space-y-6">
+                  <div className={`p-6 md:p-10 border-2 transition-all duration-700 rounded-sm relative overflow-hidden ${results.isCompliant ? 'border-amber-600/20 bg-amber-600/5' : 'border-red-600/30 bg-red-600/10'}`}>
+                    <div className="flex justify-between items-start mb-8 md:mb-12">
+                      <div>
+                        <span className={`text-[10px] uppercase font-bold tracking-[0.4em] mb-2 block ${results.isCompliant ? 'text-emerald-500' : 'text-red-500'}`}>{results.isCompliant ? t.verified : t.warning}</span>
+                        <h2 className="text-white font-architectural font-bold text-2xl md:text-3xl uppercase tracking-tighter">{t.interpretation}</h2>
                       </div>
-                   </div>
-                   <div>
-                      <span className="text-[8px] text-zinc-600 uppercase font-bold tracking-widest block mb-2">{t.stress}</span>
-                      <div className={`flex items-baseline space-x-2 ${isRTL ? 'space-x-reverse' : ''}`}>
-                         <span className="text-5xl text-white font-mono tracking-tighter">{results.stress}</span>
-                         <span className="text-xs text-zinc-600 font-mono uppercase">MPa</span>
-                      </div>
-                   </div>
-                 </div>
-                 <div className="mt-12 space-y-6 pt-10 border-t border-white/5">
-                    <div className="flex justify-between items-center">
-                       <span className="text-[8px] text-zinc-600 uppercase font-bold tracking-[0.2em]">{t.windPressure}</span>
-                       <span className="text-xs text-amber-500 font-mono">{results.windPressure} kPa</span>
+                      <div className={`w-4 h-4 rounded-full ${results.isCompliant ? 'bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.5)]' : 'bg-red-500 animate-ping'}`}></div>
                     </div>
-                    <div className="w-full h-[1px] bg-zinc-800">
-                      <div className={`h-full bg-amber-500 transition-all duration-1000 ${isRTL ? 'float-right' : ''}`} style={{ width: `${Math.min(results.windPressure * 5, 100)}%` }}></div>
-                    </div>
-                 </div>
-              </div>
-              <div className="font-mono text-[9px] space-y-2 opacity-40 px-6 py-4 bg-zinc-900/50 text-left rtl:text-right">
-                {logs.map((log, i) => <div key={i} className={`flex space-x-3 ${isRTL ? 'space-x-reverse' : ''}`}><span className="text-zinc-700">|</span>{log}</div>)}
-              </div>
-            </div>
 
-            <div className="lg:col-span-3 flex flex-col space-y-4">
-               <button 
-                 onClick={exportReport} 
-                 className="flex-1 bg-white hover:bg-amber-600 text-zinc-950 hover:text-white p-12 font-architectural font-bold uppercase tracking-[0.4em] text-[10px] transition-all flex flex-col items-center justify-center space-y-8"
-               >
-                 <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                 <span className="text-center">{t.export}</span>
-               </button>
-            </div>
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-12 mb-12 md:mb-16">
+                      <div className="space-y-1">
+                        <span className="text-[8px] md:text-[9px] text-zinc-600 uppercase font-bold tracking-widest block">{t.deflection}</span>
+                        <div className="flex items-baseline space-x-1 rtl:space-x-reverse"><span className="text-3xl md:text-4xl text-white font-mono tracking-tighter">{results.deflection}</span><span className="text-[10px] text-zinc-600 font-mono">mm</span></div>
+                      </div>
+                      <div className="space-y-1">
+                        <span className="text-[8px] md:text-[9px] text-zinc-600 uppercase font-bold tracking-widest block">{t.stress}</span>
+                        <div className="flex items-baseline space-x-1 rtl:space-x-reverse"><span className="text-3xl md:text-4xl text-white font-mono tracking-tighter">{results.stress}</span><span className="text-[10px] text-zinc-600 font-mono">MPa</span></div>
+                      </div>
+                      <div className="space-y-1">
+                        <span className="text-[8px] md:text-[9px] text-zinc-600 uppercase font-bold tracking-widest block">{t.expansion}</span>
+                        <div className="flex items-baseline space-x-1 rtl:space-x-reverse"><span className="text-3xl md:text-4xl text-white font-mono tracking-tighter">{results.expansion}</span><span className="text-[10px] text-zinc-600 font-mono">mm</span></div>
+                      </div>
+                      <div className="space-y-1">
+                        <span className="text-[8px] md:text-[9px] text-zinc-600 uppercase font-bold tracking-widest block">{t.mass}</span>
+                        <div className="flex items-baseline space-x-1 rtl:space-x-reverse"><span className="text-2xl md:text-3xl text-white font-mono tracking-tighter">{results.weight.toLocaleString()}</span><span className="text-[10px] text-zinc-600 font-mono">kg</span></div>
+                      </div>
+                    </div>
+
+                    <div className="bg-black/40 border border-white/5 p-4 font-mono text-[9px] space-y-2 text-zinc-500 h-32 md:h-40 overflow-y-auto scrollbar-hide rounded-sm">
+                      {logs.map((log, i) => <div key={i} className="flex space-x-3 rtl:space-x-reverse"><span className="text-amber-600">>>></span><span className={i === logs.length -1 ? 'text-zinc-200' : ''}>{log}</span></div>)}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                     <div className="bg-zinc-900/40 border border-white/5 p-6 rounded-sm">
+                        <h4 className="text-[10px] text-white font-architectural font-bold uppercase tracking-widest mb-6">{t.compliance}</h4>
+                        <div className="flex items-center space-x-6 rtl:space-x-reverse">
+                          <div className="text-3xl md:text-4xl font-mono text-emerald-500">{results.carbon}</div>
+                          <div className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">kg CO₂ <br/>Indicative Footprint</div>
+                        </div>
+                     </div>
+                     <div className="bg-zinc-900/40 border border-white/5 p-6 rounded-sm">
+                        <h4 className="text-[10px] text-white font-architectural font-bold uppercase tracking-widest mb-6">{t.workflow}</h4>
+                        <div className="flex items-center space-x-6 rtl:space-x-reverse">
+                          <div className="text-3xl md:text-4xl font-mono text-amber-500">{MATERIALS.find(m => m.id === params.material)?.lead}</div>
+                          <div className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">{t.days} <br/>{t.leadTime}</div>
+                        </div>
+                     </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTool === 'intel' && (
+              <div className="space-y-8 animate-fade-in-up">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 text-center">
+                  {[
+                    { title: "BIM SYNC", val: "99.98%", status: "OPTIMAL" },
+                    { title: "CORE UPTIME", val: "1420:12", status: "STABLE" },
+                    { title: "ACTIVE NODES", val: "31", status: "SYNCED" }
+                  ].map((s, i) => (
+                    <div key={i} className="bg-zinc-900/40 border border-white/5 p-8 md:p-12 rounded-sm backdrop-blur-sm">
+                      <h4 className="text-[10px] text-zinc-600 font-architectural font-bold uppercase tracking-[0.3em] mb-4">{s.title}</h4>
+                      <div className="text-4xl md:text-5xl font-mono text-white mb-4 tracking-tighter">{s.val}</div>
+                      <div className="text-[8px] font-bold text-emerald-500 uppercase tracking-widest">{s.status}</div>
+                    </div>
+                  ))}
+                </div>
+                <div className="bg-zinc-900/40 border border-white/5 p-8 rounded-sm">
+                   <h3 className="text-white font-architectural font-bold text-[10px] uppercase tracking-[0.3em] mb-8">{t.nodeSync}</h3>
+                   <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                      {[...Array(12)].map((_, i) => (
+                        <div key={i} className="flex items-center space-x-2 bg-zinc-950 p-3 rounded-sm border border-white/5">
+                           <div className={`w-1.5 h-1.5 rounded-full ${Math.random() > 0.1 ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'}`}></div>
+                           <span className="text-[9px] font-mono text-zinc-500">ST-00{i+1}</span>
+                        </div>
+                      ))}
+                   </div>
+                </div>
+              </div>
+            )}
+
+            {activeTool === 'workflow' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-fade-in-up">
+                <div className="bg-zinc-900/40 border border-white/5 p-8 rounded-sm">
+                   <h3 className="text-white font-architectural font-bold text-[10px] uppercase tracking-[0.3em] mb-8">BUILDER LOGISTICS RELAY</h3>
+                   <div className="space-y-6">
+                      {[
+                        { label: "STEEL PROCUREMENT", status: "45 DAYS", progress: 65 },
+                        { label: "CONCRETE BATCHING", status: "READY", progress: 100 },
+                        { label: "GLASS CURTAIN WALL", status: "90 DAYS", progress: 20 },
+                        { label: "HVAC PRE-FAB", status: "15 DAYS", progress: 85 }
+                      ].map((item, i) => (
+                        <div key={i} className="space-y-2">
+                           <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-widest">
+                              <span className="text-zinc-500">{item.label}</span>
+                              <span className="text-amber-500">{item.status}</span>
+                           </div>
+                           <div className="w-full h-1 bg-zinc-950 rounded-full overflow-hidden">
+                              <div className="h-full bg-amber-600 transition-all duration-1000" style={{ width: `${item.progress}%` }}></div>
+                           </div>
+                        </div>
+                      ))}
+                   </div>
+                </div>
+                <div className="bg-zinc-900/40 border border-white/5 p-8 rounded-sm flex flex-col justify-center items-center text-center">
+                   <div className="w-16 h-16 border border-amber-600/30 rounded-full flex items-center justify-center mb-6">
+                      <div className="w-2 h-2 rounded-full bg-amber-500 animate-ping"></div>
+                   </div>
+                   <h4 className="text-white font-architectural text-[10px] uppercase tracking-widest mb-2">{t.logisticsActive}</h4>
+                   <p className="text-zinc-600 text-[10px] max-w-xs font-light">Real-time procurement data streams are synced with global supply chain nodes.</p>
+                </div>
+              </div>
+            )}
+
+            {activeTool === 'audit' && (
+              <div className="space-y-8 animate-fade-in-up">
+                 <div className="p-8 md:p-12 bg-emerald-950/20 border border-emerald-500/20 rounded-sm">
+                    <div className="flex justify-between items-center mb-12">
+                       <h3 className="text-white font-architectural font-bold text-xl uppercase tracking-tighter">SUSTAINABILITY SCORE: A+</h3>
+                       <div className="text-emerald-500 font-mono text-[10px] uppercase tracking-widest font-bold">Audit Verified</div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+                       <div className="space-y-2">
+                          <span className="text-[9px] text-zinc-500 uppercase font-bold tracking-widest block">EMBODIED CO₂</span>
+                          <div className="flex items-baseline space-x-2"><span className="text-4xl text-white font-mono">{results.carbon}</span><span className="text-[10px] text-zinc-600">kg</span></div>
+                       </div>
+                       <div className="space-y-2">
+                          <span className="text-[9px] text-zinc-500 uppercase font-bold tracking-widest block">RECYCLABILITY</span>
+                          <div className="flex items-baseline space-x-2"><span className="text-4xl text-white font-mono">82</span><span className="text-[10px] text-zinc-600">%</span></div>
+                       </div>
+                       <div className="space-y-2">
+                          <span className="text-[9px] text-zinc-500 uppercase font-bold tracking-widest block">OPERATIONAL NET</span>
+                          <div className="flex items-baseline space-x-2"><span className="text-4xl text-white font-mono">0.0</span><span className="text-[10px] text-zinc-600">kW</span></div>
+                       </div>
+                    </div>
+                 </div>
+                 <div className="bg-zinc-900/40 border border-white/5 p-8 rounded-sm">
+                    <h4 className="text-white font-architectural text-[10px] uppercase tracking-widest mb-6 font-bold">Eco-Material Strategy</h4>
+                    <p className="text-zinc-400 text-sm font-light leading-relaxed">By prioritizing {MATERIALS.find(m => m.id === params.material)?.name[lang]} in this scenario, the embodied carbon is estimated at {results.carbon} kg. This module recommends high-performance alternatives if the target falls below threshold B2.</p>
+                 </div>
+              </div>
+            )}
           </div>
-        )}
-        {(activeTool === 'workflow' || activeTool === 'audit') && (
-            <div className="p-24 text-center border border-white/5 bg-zinc-900/40">
-                <span className="text-zinc-600 font-architectural uppercase tracking-widest text-xs">
-                    {lang === 'en' ? 'BIM OBSERVATION MODULE ACTIVE' : lang === 'ar' ? 'وحدة مراقبة BIM نشطة' : lang === 'tr' ? 'BIM GÖZLEM MODÜLÜ AKTİF' : 'BIM-BEOBACHTUNGSMODUL AKTIV'}
-                </span>
-            </div>
-        )}
+        </main>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-black/98 backdrop-blur-2xl border-t border-white/5 px-8 py-6 flex flex-col md:flex-row justify-between items-center z-[100] gap-4">
-        <div className={`flex space-x-12 ${isRTL ? 'space-x-reverse' : ''}`}>
-           <div className={`flex items-center space-x-3 ${isRTL ? 'space-x-reverse' : ''}`}>
-             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></div>
-             <span className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest">{t.protocol}</span>
-           </div>
-        </div>
-
-        <div className={`flex items-center space-x-8 ${isRTL ? 'space-x-reverse' : ''}`}>
-           <div className={`flex space-x-4 ${isRTL ? 'space-x-reverse' : ''}`}>
-             {(['en', 'ar', 'tr', 'de'] as Language[]).map(l => (
-               <button key={l} onClick={() => setInternalLang(l)} className={`text-[9px] font-bold uppercase tracking-widest ${lang === l ? 'text-amber-500 underline' : 'text-zinc-500 hover:text-white'}`}>{l}</button>
-             ))}
-           </div>
-           <button onClick={onBack} className="text-[10px] font-architectural font-bold uppercase tracking-[0.4em] text-amber-500 hover:text-white transition-all px-10 py-3 border border-amber-500/20 hover:bg-amber-500/10">
-             {t.terminate}
-           </button>
-        </div>
-      </div>
+      {/* Persistent Status Bar */}
+      <footer className="h-10 bg-zinc-950 border-t border-white/5 flex items-center justify-between px-6 md:px-8 text-[8px] font-mono text-zinc-700 uppercase tracking-[0.2em] shrink-0">
+         <div className="flex space-x-6 rtl:space-x-reverse">
+           <span className="text-emerald-500/50">RELAY_SYNC: 0.08ms</span>
+           <span className="hidden sm:inline">PROTO: BIM_600_ELITE</span>
+         </div>
+         <div className="flex space-x-6 rtl:space-x-reverse">
+           <span className="hidden sm:inline">NODES: 14/14</span>
+           <span>SYS_EPOCH: ${new Date().getFullYear()}.Q4</span>
+         </div>
+      </footer>
     </div>
   );
 };

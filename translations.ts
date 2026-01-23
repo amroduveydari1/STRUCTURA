@@ -509,7 +509,7 @@ export const UI_STRINGS = {
       cookies: {
         title: 'Cookie Settings',
         subtitle: 'Sistem Sürekliliği',
-        content: 'Mission Control oturumunuzu ve yapısal meta veri tercihlerinizi korumak için gerekli teknik çerezleri kullanıyoruz.',
+        content: 'We use essential technical cookies to maintain your Mission Control session and structural metadata preferences.',
         sections: [
           { h: 'Sitzungs-Cookies', p: 'Erforderlich für die Statuserhaltung zwischen Analyse- und Workflow-Tabs.' },
           { h: 'Analytische Knoten', p: 'Zur Verbesserung der Reaktionsfähigkeit unserer BIM Level 400 Simulationen.' },
@@ -665,7 +665,7 @@ export const UI_STRINGS = {
         sections: [
           { h: 'Datensicherheit', p: 'Alle Übertragungen an hello@amrostudio.co sind mit AES-256-Verschlüsselung gesichert.' },
           { h: 'BIM-Schutz', p: 'Metadaten werden nur zur Berechnungsgenauigkeit innerhalb des Mission Control Hubs verwendet.' },
-          { h: 'Ihre Rechte', p: 'Sie haben das volle Eigentum an Ihren architektonischen Modellen.' }
+          { h: 'Ihre Rechte', p: 'Sie have das volle Eigentum an Ihren architektonischen Modellen.' }
         ]
       },
       terms: {
